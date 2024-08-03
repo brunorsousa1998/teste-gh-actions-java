@@ -34,7 +34,7 @@ jobs:
 
   generate:
     runs-on: self-hosted
-    needs: generate
+    needs: compile
     steps:
       - name: build image
         run: docker build -t todo-backend .
