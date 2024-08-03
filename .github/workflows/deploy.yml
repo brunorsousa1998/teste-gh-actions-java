@@ -45,10 +45,11 @@ jobs:
     runs-on: self-hosted
     needs: generate
     steps:
+      - name: debug
+        run: ls
+
       - name: load image
-        run: |
-          ls
-          docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+        run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
           "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" docker load
 
       - name: run image
