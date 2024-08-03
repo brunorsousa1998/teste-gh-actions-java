@@ -21,6 +21,7 @@ jobs:
 
   compile:
     runs-on: self-hosted
+    needs: prepare
     steps:
       - name: setup corretto
         uses: actions/setup-java@v4
@@ -33,12 +34,14 @@ jobs:
 
   generate:
     runs-on: self-hosted
+    needs: generate
     steps:
       - name: build image
         run: docker build -t todo-backend .
 
   deploy:
     runs-on: self-hosted
+    needs: generate
     steps:
       - name: load image
         run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
@@ -57,6 +60,7 @@ jobs:
           todo-backend
   clean:
     runs-on: self-hosted
+    needs: deploy
     steps:
       - name: clean image
         run: docker rmi todo-backend
