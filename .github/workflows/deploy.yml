@@ -32,7 +32,7 @@ jobs:
         run: chmod +x mvnw
 
       - name: compile
-        run: ./mvnw clean package
+        run: ./mvnw package &> /dev/null
 
   generate:
     runs-on: self-hosted
@@ -46,7 +46,9 @@ jobs:
     needs: generate
     steps:
       - name: load image
-        run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+        run: |
+          ls
+          docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
           "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" docker load
 
       - name: run image
