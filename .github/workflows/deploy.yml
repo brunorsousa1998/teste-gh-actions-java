@@ -18,11 +18,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
           
-
   compile:
     runs-on: self-hosted
     needs: prepare
     steps:
+      - name: enable mvnw
+        run: chmod +x mvnw
+
       - name: compile
         run: ./mvnw clean package
 
