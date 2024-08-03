@@ -1,0 +1,62 @@
+name: to-do backend deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  prepare:
+    runs-on: self-hosted
+    steps:
+      - name: setup ssh key
+        run: |
+          echo "${{ secrets.REMOTE_SSH_KEY }}" >> remote_ssh_key
+          chmod 600 remote_ssh_key
+
+      - name: checkout
+        uses: actions/checkout@v4
+          
+
+  compile:
+    runs-on: self-hosted
+    steps:
+      - name: setup corretto
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 17
+
+      - name: compile
+        run: mvn clean package
+
+  generate:
+    runs-on: self-hosted
+    steps:
+      - name: build image
+        run: docker build -t todo-backend .
+
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: load image
+        run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+          "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" docker load
+
+      - name: run image
+        run: |
+          ssh -o StrictHostKeyChecking=no -i remote_ssh_key "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" \
+          docker stop todo-backend || : \
+          && docker run \
+          --detach \
+          --rm \
+          --env-file "${{ secrets.REMOTE_ENV_PATH }}" \
+          --name todo-backend \
+          --publish 8080:8080 \
+          todo-backend
+  clean:
+    runs-on: self-hosted
+    steps:
+      - name: clean image
+        run: docker rmi todo-backend
