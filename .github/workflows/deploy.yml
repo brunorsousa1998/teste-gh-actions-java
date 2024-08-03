@@ -67,5 +67,10 @@ jobs:
     runs-on: self-hosted
     needs: deploy
     steps:
-      - name: clean image
+      - name: prune removed image
+        run: ssh -o StrictHostKeyChecking=no -i remote_ssh_key
+          "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}"
+          "docker image prune -a -f"
+
+      - name: clean runner image
         run: docker rmi todo-backend
