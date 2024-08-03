@@ -24,7 +24,7 @@ jobs:
     needs: prepare
     steps:
       - name: compile
-        run: ./mvn clean package
+        run: ./mvnw clean package
 
   generate:
     runs-on: self-hosted
