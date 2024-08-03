@@ -23,14 +23,8 @@ jobs:
     runs-on: self-hosted
     needs: prepare
     steps:
-      - name: setup corretto
-        uses: actions/setup-java@v4
-        with:
-          distribution: corretto
-          java-version: 17
-
       - name: compile
-        run: mvn clean package
+        run: ./mvn clean package
 
   generate:
     runs-on: self-hosted
