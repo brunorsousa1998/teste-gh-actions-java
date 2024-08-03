@@ -46,8 +46,7 @@ jobs:
     needs: generate
     steps:
       - name: load image
-        run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
-          "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" "
+        run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" "
             docker load
           "
 
