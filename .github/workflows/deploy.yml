@@ -10,14 +10,14 @@ jobs:
   prepare:
     runs-on: self-hosted
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
       - name: setup ssh key
         run: |
           echo "${{ secrets.REMOTE_SSH_KEY }}" >> remote_ssh_key
           chmod 600 remote_ssh_key
 
-      - name: checkout
-        uses: actions/checkout@v4
-          
   compile:
     runs-on: self-hosted
     needs: prepare
