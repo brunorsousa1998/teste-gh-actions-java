@@ -58,8 +58,7 @@ jobs:
       - name: run image
         run: ssh -o StrictHostKeyChecking=no -i remote_ssh_key 
             "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" 
-            "docker stop todo-backend || true && 
-            docker run 
+            "docker run 
             --detach 
             --rm 
             --env-file ${{ secrets.REMOTE_ENV_PATH }}  
