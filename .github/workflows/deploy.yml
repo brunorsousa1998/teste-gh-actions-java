@@ -22,6 +22,12 @@ jobs:
     runs-on: self-hosted
     needs: prepare
     steps:
+      - name: setup corretto
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 17
+
       - name: enable mvnw
         run: chmod +x mvnw
 
