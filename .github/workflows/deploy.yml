@@ -46,21 +46,25 @@ jobs:
     needs: generate
     steps:
       - name: load image
-        run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" "
+        run: |
+          docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" \
             docker load
-          "
+        
 
       - name: run image
-        run: ssh -o StrictHostKeyChecking=no -i remote_ssh_key "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" "
-            docker stop todo-backend || true &&
-            docker run 
-            --detach 
-            --rm 
-            --env-file ${{ secrets.REMOTE_ENV_PATH }} 
-            --name todo-backend 
-            --publish 8080:8080 
+        run: |
+          ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" \
+            docker stop todo-backend || true && \
+            docker run \
+            --detach \
+            --rm \
+            --env-file "${{ secrets.REMOTE_ENV_PATH }}" \ 
+            --name todo-backend \
+            --publish 8080:8080 \
             todo-backend
-          "
+
   clean:
     runs-on: self-hosted
     needs: deploy
