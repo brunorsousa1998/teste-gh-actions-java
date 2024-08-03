@@ -32,32 +32,37 @@ jobs:
         run: chmod +x mvnw
 
       - name: compile
-        run: ./mvnw package &> /dev/null
+        run: |
+          ./mvnw package &> /dev/null
 
   generate:
     runs-on: self-hosted
     needs: compile
     steps:
       - name: build image
-        run: docker build -t todo-backend .
+        run: |
+          docker build -t todo-backend .
 
   deploy:
     runs-on: self-hosted
     needs: generate
     steps:
       - name: load image
-        run: docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key 
-            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" 
+        run: |
+          docker save todo-backend | ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" \
             "docker load"
 
       - name: delete previous image
-        run: ssh -o StrictHostKeyChecking=no -i remote_ssh_key 
-          "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" 
-          "docker stop todo || :"
+        run: |
+          ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" \
+            "docker stop todo-backend || :"
 
       - name: run image
-        run: ssh -o StrictHostKeyChecking=no -i remote_ssh_key 
-            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" 
+        run: |
+          ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" \
             "docker run 
             --detach 
             --rm 
@@ -71,9 +76,11 @@ jobs:
     needs: deploy
     steps:
       - name: prune removed image
-        run: ssh -o StrictHostKeyChecking=no -i remote_ssh_key
-          "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}"
-          "docker image prune -a -f"
+        run: |
+          ssh -o StrictHostKeyChecking=no -i remote_ssh_key \
+            "${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}" \
+            "docker image prune -a -f"
 
       - name: clean runner image
-        run: docker rmi todo-backend
+        run: |
+          docker rmi todo-backend
