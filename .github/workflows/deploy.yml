@@ -60,7 +60,7 @@ jobs:
             docker run \
             --detach \
             --rm \
-            --env-file "${{ secrets.REMOTE_ENV_PATH }}" \ 
+            --env-file "${{ variables.REMOTE_ENV_PATH }}" \ 
             --name todo-backend \
             --publish 8080:8080 \
             todo-backend
